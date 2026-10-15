@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: movieverse-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Maziya123@
+      MYSQL_DATABASE: movieverse
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - movieverse-net
+
+  backend:
+    build: ./movieverse-backend
+    container_name: movieverse-backend
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Maziya123@
+      DB_NAME: movieverse
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - movieverse-net
+
+  frontend:
+    build: ./movieverse-frontend
+    container_name: movieverse-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - movieverse-net
+
+volumes:
+  mysql_data:
+
+networks:
+  movieverse-net:
+    driver: bridge
